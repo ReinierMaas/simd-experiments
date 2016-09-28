@@ -12,11 +12,9 @@ const B: &'static [u32] = &[6; LENGTH];
 fn main() {
     let mut c = [0; LENGTH];
 
-    let mut f = move || prod_sse(A, B, &mut c);
-    f();
+    prod_sse(A, B, &mut c);
 
-    let c2: &[u32] = &c;
-    println!("{:?}", c2);
+    println!("{:?}", c.len());
 }
 
 #[inline(never)]
@@ -54,8 +52,9 @@ fn bench_normal(b: &mut test::Bencher) {
 
 #[bench]
 fn bench_sse(b: &mut test::Bencher) {
-    let mut c = [0; LENGTH];
+    let mut c: &mut [u32] = &mut [0; LENGTH];
     b.iter(|| {
+        let mut c = test::black_box(&mut c);
         prod_sse(A, B, &mut c);
         test::black_box(&c);
     });
