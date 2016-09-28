@@ -1,0 +1,7 @@
+[package]
+name = "simd-rs"
+version = "0.1.0"
+authors = ["Adolfo Ochagavía <aochagavia92@gmail.com>"]
+
+[dependencies]
+simd = "0.1.1"
