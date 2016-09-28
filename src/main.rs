@@ -1,9 +1,13 @@
 #![feature(test)]
+#![feature(cfg_target_feature)]
 
 extern crate simd;
 extern crate test;
 
 use simd::u32x4;
+
+//#[cfg(target_feature = "avx")]
+use simd::x86::avx::u32x8;
 
 const LENGTH: usize = 2048;
 const A: &'static [u32] = &[5; LENGTH];
@@ -34,11 +38,15 @@ fn prod_normal(a: &[u32], b: &[u32], out: &mut [u32]) {
     }
 }
 
-
-
+//#[cfg(target_feature = "avx")]
 #[inline(never)]
 fn prod_avx(a: &[u32], b: &[u32], out: &mut [u32]) {
-
+    for i in 0..LENGTH / 8 {
+        let a8 = u32x8::load(a, i * 8);
+        let b8 = u32x8::load(b, i * 8);
+        let c8 = a8 * b8;
+        c8.store(out, i * 8);
+    }
 }
 
 #[bench]
@@ -60,11 +68,13 @@ fn bench_sse(b: &mut test::Bencher) {
     });
 }
 
-//#[bench]
+//#[cfg(target_feature = "avx")]
+#[bench]
 fn bench_avx(b: &mut test::Bencher) {
-    let c = &mut [0; LENGTH];
+    let mut c: &mut [u32] = &mut [0; LENGTH];
     b.iter(|| {
-        prod_avx(A, B, c);
+        let mut c = test::black_box(&mut c);
+        prod_avx(A, B, &mut c);
         test::black_box(&c);
     });
 }
