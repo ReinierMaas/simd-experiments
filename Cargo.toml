@@ -1,7 +1,15 @@
 [package]
-name = "simd-rs"
+name = "simd-experiments"
 version = "0.1.0"
 authors = ["Adolfo Ochagavía <aochagavia92@gmail.com>","Reinier Maas <reiniermaas@hotmail.com>"]
+
+[lib]
+name = "simd_library"
+path = "src/lib.rs"
+
+[[bin]]
+name = "simd_experiments"
+path = "src/main.rs"
 
 [dependencies]
 simd = { git = "https://github.com/huonw/simd" }
